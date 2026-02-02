@@ -1,9 +1,10 @@
 pub(crate) use crate::ida::*;
 pub(crate) use crate::kimi::*;
 pub(crate) use crate::{println, dbg};
-pub(crate) use serde::{Serializer, Deserialize, Serialize};
+pub(crate) use serde::{Deserializer, Serializer, Deserialize, Serialize, de::Error};
 pub(crate) use spin::{Mutex, MutexGuard};
 pub(crate) use rayon::prelude::*;
+pub(crate) use serde_json::Value;
 
 #[macro_export]
 macro_rules! println {

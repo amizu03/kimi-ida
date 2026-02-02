@@ -9,6 +9,17 @@ where S: Serializer
     s.serialize_str(&format!("0x{x:X}"))
 }
 
+fn deserialize_ea<'de, D>(d: D) -> Result<ea_t, D::Error>
+where D: Deserializer<'de>
+{
+    match Value::deserialize(d)? {
+        Value::Number(n) => n.as_u64().ok_or_else(|| D::Error::custom("invalid number")),
+        Value::String(s) => u64::from_str_radix(s.trim_start_matches("0x"), 16)
+            .map_err(|_| D::Error::custom("invalid EA string")),
+        _ => Err(D::Error::custom("expected number or string")),
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct StructFieldXRef {
     pub data: DataXRef,
@@ -18,7 +29,7 @@ pub struct StructFieldXRef {
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct DataXRef {
-    #[serde(rename = "address", serialize_with = "serialize_ea")]
+    #[serde(rename = "address", serialize_with = "serialize_ea", deserialize_with = "deserialize_ea")]
     pub ea: ea_t,
     pub name: String,
     pub comment: Option<String>,
@@ -27,7 +38,7 @@ pub struct DataXRef {
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct PseudocodeLocation {
-    #[serde(rename = "address")]
+    #[serde(rename = "address", serialize_with = "serialize_ea", deserialize_with = "deserialize_ea")]
     pub ea: ea_t,
     pub code: String,
 }
@@ -51,7 +62,7 @@ pub struct AnalyzedVariable {
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct AnalyzedComment {
-    #[serde(rename = "address", serialize_with = "serialize_ea")]
+    #[serde(rename = "address", serialize_with = "serialize_ea", deserialize_with = "deserialize_ea")]
     pub ea: ea_t,
     pub comment: String,
 }
@@ -146,7 +157,7 @@ impl AnalyzedFunction {
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct Function {
-    #[serde(rename = "address")]
+    #[serde(rename = "address", serialize_with = "serialize_ea", deserialize_with = "deserialize_ea")]
     pub ea: ea_t,
     pub name: String,
     pub comment: Option<String>,

@@ -61,7 +61,7 @@ extern "C" fn action_activate(handler: &mut action_handler_t, ctx: &mut action_a
 
 extern "C" fn action_update(handler: &mut action_handler_t, ctx: &mut action_update_ctx_t) -> action_state_t {
     // Enable only in pseudocode view
-    if ctx.widget_type == BWN_PSEUDOCODE {
+    if ctx.widget_type == BWN_PSEUDOCODE || ctx.widget_type == BWN_DISASM {
         action_state_t::AST_ENABLE_FOR_WIDGET
     }
     else {
@@ -99,7 +99,7 @@ extern "C" fn action_all_activate(handler: &mut action_handler_t, ctx: &mut acti
         for (ea, size) in func_eas {
             // maximum number of concurrent requests reached,
             // wait for new slot to open
-            while ACTIVE_ANALYSIS_COUNT.load(Ordering::Relaxed) >= 5 {
+            while ACTIVE_ANALYSIS_COUNT.load(Ordering::Relaxed) >= 9 {
                 sleep(Duration::from_millis(250));
             }
 
@@ -162,7 +162,7 @@ extern "C" fn action_all_activate(handler: &mut action_handler_t, ctx: &mut acti
 
 extern "C" fn action_all_update(handler: &mut action_handler_t, ctx: &mut action_update_ctx_t) -> action_state_t {
     // Enable only in pseudocode view
-    if ctx.widget_type == BWN_PSEUDOCODE {
+    if ctx.widget_type == BWN_PSEUDOCODE || ctx.widget_type == BWN_DISASM {
         action_state_t::AST_ENABLE_FOR_WIDGET
     }
     else {
