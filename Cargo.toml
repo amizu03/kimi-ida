@@ -1,0 +1,43 @@
+cargo-features = ["profile-rustflags"]
+
+[package]
+name = "kimi-ida"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[unstable]
+mtime-on-use = true
+build-std = ["core", "alloc"]
+#build-std-features = ["build-std-features=panic_immediate_abort"]
+
+# Reduce binary size
+[profile.release]
+opt-level = 3
+codegen-units = 1
+debug-assertions = false
+lto = true
+overflow-checks = false
+panic = "abort"
+debug = true
+split-debuginfo = "packed"
+rustflags = [
+  "-Ctarget-feature=+fma",
+  "-Ctarget-feature=+avx",
+  "-Ctarget-feature=+avx2",
+  "-Ccontrol-flow-guard=off",
+  "-Cforce-unwind-tables=on",
+]
+
+[dependencies]
+textwrap = "0.16.2"
+reqwest = { version = "0.13.1", features = ["blocking", "json"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+rayon = "1.11.0"
+spin = "0.10.0"
+
+[build-dependencies]
+bindgen = "0.72.1"
