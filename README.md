@@ -70,3 +70,4 @@ target/release/kimi_ida.dll
 MIT License - See `LICENSE` file for details.
 
 Copyright (c) 2026 Alex Mizumori
+
